@@ -1,0 +1,50 @@
+Jun 17 19:35:51 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 1
+Jun 17 19:35:52 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 2
+Jun 17 19:35:54 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 4
+Jun 17 19:35:58 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 10
+Jun 17 19:36:00 fw.rodolfoarce.local /usr/sbin/cron[21385]: (root) CMD (/usr/sbin/newsyslog)
+Jun 17 19:36:08 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 14
+Jun 17 19:36:22 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 18
+Jun 17 19:36:40 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 12
+Jun 17 19:36:43 fw.rodolfoarce.local dhcp6c[28115]: Sending Solicit
+Jun 17 19:36:52 fw.rodolfoarce.local dhclient[10762]: No DHCPOFFERS received.
+Jun 17 19:36:52 fw.rodolfoarce.local dhclient[10762]: No working leases in persistent database - sleeping.
+Jun 17 15:36:52 fw.rodolfoarce.local dhclient[41835]: FAIL
+Jun 17 19:37:00 fw.rodolfoarce.local /usr/sbin/cron[41951]: (root) CMD (/usr/sbin/newsyslog)
+Jun 17 19:37:07 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 2
+Jun 17 19:37:09 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 3
+Jun 17 19:37:12 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 6
+Jun 17 19:37:18 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 10
+Jun 17 19:37:28 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 17
+Jun 17 19:37:46 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 10
+Jun 17 19:37:56 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 12
+Jun 17 19:38:00 fw.rodolfoarce.local /usr/sbin/cron[60139]: (root) CMD (/usr/sbin/newsyslog)
+Jun 17 19:38:08 fw.rodolfoarce.local dhclient[10762]: No DHCPOFFERS received.
+Jun 17 19:38:08 fw.rodolfoarce.local dhclient[10762]: No working leases in persistent database - sleeping.
+Jun 17 15:38:08 fw.rodolfoarce.local dhclient[60696]: FAIL
+Jun 17 19:38:23 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 2
+Jun 17 19:38:25 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 3
+Jun 17 19:38:28 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 5
+Jun 17 19:38:33 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 11
+Jun 17 19:38:44 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 10
+Jun 17 19:38:46 fw.rodolfoarce.local dhcp6c[28115]: Sending Solicit
+Jun 17 19:38:54 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 15
+Jun 17 19:39:00 fw.rodolfoarce.local /usr/sbin/cron[79380]: (root) CMD (/usr/sbin/newsyslog)
+Jun 17 19:39:09 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 8
+Jun 17 19:39:17 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 7
+Jun 17 19:39:24 fw.rodolfoarce.local dhclient[10762]: No DHCPOFFERS received.
+Jun 17 19:39:24 fw.rodolfoarce.local dhclient[10762]: No working leases in persistent database - sleeping.
+Jun 17 15:39:24 fw.rodolfoarce.local dhclient[80588]: FAIL
+Jun 17 19:39:33 fw.rodolfoarce.local filterlog[32783]: 4,,,1000000103,vtnet0,match,block,in,4,0x0,,116,41121,0,none,17,udp,71,74.125.40.67,10.255.255.1,45016,53,51
+Jun 17 19:39:35 fw.rodolfoarce.local filterlog[32783]: 4,,,1000000103,vtnet0,match,block,in,4,0x0,,116,13907,0,none,17,udp,71,74.125.40.18,10.255.255.1,56202,53,51
+Jun 17 19:39:36 fw.rodolfoarce.local filterlog[32783]: 4,,,1000000103,vtnet0,match,block,in,4,0x0,,116,45814,0,none,17,udp,71,74.125.44.67,10.255.255.1,57284,53,51
+Jun 17 19:39:37 fw.rodolfoarce.local filterlog[32783]: 4,,,1000000103,vtnet0,match,block,in,4,0x0,,116,17395,0,none,17,udp,80,74.125.19.5,10.255.255.1,59666,53,60
+Jun 17 19:39:39 fw.rodolfoarce.local filterlog[32783]: 4,,,1000000103,vtnet0,match,block,in,4,0x0,,116,34966,0,none,17,udp,71,74.125.44.74,10.255.255.1,59531,53,51
+Jun 17 19:39:39 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 2
+Jun 17 19:39:42 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 5
+Jun 17 19:39:47 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 8
+Jun 17 19:39:55 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 21
+Jun 17 19:40:00 fw.rodolfoarce.local /usr/sbin/cron[99824]: (root) CMD (/usr/sbin/newsyslog)
+Jun 17 19:40:00 fw.rodolfoarce.local /usr/sbin/cron[22]: (root) CMD (/usr/libexec/atrun)
+Jun 17 19:40:16 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 20
+Jun 17 19:40:36 fw.rodolfoarce.local dhclient[10762]: DHCPDISCOVER on vtnet0 to 255.255.255.255 port 67 interval 4
