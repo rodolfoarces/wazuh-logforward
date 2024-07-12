@@ -1,0 +1,79 @@
+2024-07-08T09:37:36.297110-04:00 ap.rodolfoarce.local system,info log rule changed by admin
+2024-07-08T09:37:43.067779-04:00 ap.rodolfoarce.local system,info message repeated 2 times: [ log rule changed by admin]
+2024-07-08T09:41:21.468344-04:00 ap.rodolfoarce.local system,info log rule added by admin
+2024-07-08T09:42:01.331912-04:00 ap.rodolfoarce.local system,info message repeated 3 times: [ log rule added by admin]
+2024-07-08T09:47:44.295904-04:00 ap.rodolfoarce.local system,info dhcp network changed by admin
+2024-07-08T09:47:45.273702-04:00 ap.rodolfoarce.local system,info dhcp network changed by admin
+2024-07-08T09:47:46.142131-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -62
+2024-07-08T09:48:53.249681-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -67
+2024-07-08T09:48:53.484569-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T09:48:53.509387-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T09:54:01.712084-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -67
+2024-07-08T09:54:42.672710-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -68
+2024-07-08T09:54:42.827805-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T09:54:42.902705-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T10:00:21.281865-04:00 ap.rodolfoarce.local system,info ip service changed by admin
+2024-07-08T10:08:48.384310-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -68
+2024-07-08T10:12:58.826555-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -71
+2024-07-08T10:12:59.102924-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T10:12:59.133687-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T10:19:02.506135-04:00 ap.rodolfoarce.local system,info,account user admin logged out from 10.255.254.250 via web
+2024-07-08T10:39:01.630026-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -71
+2024-07-08T10:39:03.985153-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -63
+2024-07-08T10:39:04.220362-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T10:39:04.322114-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T10:42:10.851523-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, group key exchange timeout, signal strength -93
+2024-07-08T10:49:03.968026-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -81
+2024-07-08T10:49:04.244599-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T10:49:04.346307-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T10:49:10.488698-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -81
+2024-07-08T10:59:04.399976-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:10:45.686279-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -71
+2024-07-08T11:10:46.394969-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T11:18:21.822389-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -71
+2024-07-08T11:25:46.528884-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:36:27.478903-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -77
+2024-07-08T11:36:28.330974-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T11:39:50.692767-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -77
+2024-07-08T11:45:32.359062-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -72
+2024-07-08T11:45:32.694739-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:45:32.719497-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T11:46:26.859592-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -72
+2024-07-08T11:47:30.520681-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -76
+2024-07-08T11:47:30.824657-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:47:30.880882-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T11:49:17.936570-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -76
+2024-07-08T11:50:51.261873-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -75
+2024-07-08T11:50:51.456918-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:50:51.582397-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T11:51:50.495701-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -75
+2024-07-08T11:59:27.974305-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -71
+2024-07-08T11:59:28.268167-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T11:59:28.294544-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T12:03:47.424589-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -71
+2024-07-08T12:05:12.768072-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -64
+2024-07-08T12:05:12.986810-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T12:05:13.030885-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-08T12:06:07.039560-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -64
+2024-07-08T12:15:13.060680-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-08T18:00:17.132790-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.250 to 78:8C:B5:73:C6:BE
+2024-07-09T06:55:11.198636-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.250 to 78:8C:B5:73:C6:BE
+2024-07-10T06:44:51.691659-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.250 to 78:8C:B5:73:C6:BE
+2024-07-10T08:36:31.927764-04:00 ap.rodolfoarce.local wireless,info 0A:DE:C5:B4:8C:9B@wlan1: connected, signal strength -53
+2024-07-10T08:36:32.707730-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.48 to 0A:DE:C5:B4:8C:9B
+2024-07-10T08:49:04.642698-04:00 ap.rodolfoarce.local wireless,info 0A:DE:C5:B4:8C:9B@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -53
+2024-07-10T08:56:32.950413-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.48 from 0A:DE:C5:B4:8C:9B
+2024-07-11T06:37:29.690016-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.250 to 78:8C:B5:73:C6:BE
+2024-07-11T18:34:41.813226-04:00 ap.rodolfoarce.local wireless,info 0A:DE:C5:B4:8C:9B@wlan1: connected, signal strength -61
+2024-07-11T18:34:42.646012-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.48 to 0A:DE:C5:B4:8C:9B
+2024-07-12T06:48:28.258946-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.250 to 78:8C:B5:73:C6:BE
+2024-07-12T07:58:28.914589-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -69
+2024-07-12T07:58:29.686379-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-12T08:05:33.946273-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, extensive data loss, signal strength -69
+2024-07-12T08:13:29.840340-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-12T08:17:22.909309-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -60
+2024-07-12T08:17:23.599671-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
+2024-07-12T08:24:01.296571-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: disconnected, received deauth: sending station leaving (3), signal strength -60
+2024-07-12T08:24:02.174553-04:00 ap.rodolfoarce.local wireless,info F6:70:79:4E:16:AB@wlan1: connected, signal strength -65
+2024-07-12T08:24:02.377074-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER deassigned 10.255.254.46 from F6:70:79:4E:16:AB
+2024-07-12T08:24:02.424291-04:00 ap.rodolfoarce.local dhcp,info LAN-DHCP-SERVER assigned 10.255.254.46 to F6:70:79:4E:16:AB
