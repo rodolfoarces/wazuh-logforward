@@ -18,12 +18,15 @@ log_dir = Path(sys.argv[1]).resolve()
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
-def findFiles():
-    files_in_dir = subprocess.run(['find', sys.argv[1], '-type', 'f'], stdout=subprocess.PIPE)
+# Functions and additional processing
+def findFiles(directory=sys.argv[-1]):
+    files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
     files = files_in_dir.stdout.decode('utf-8').splitlines()
     for item in files:
         file_list.append(item)
 
+    # print(file_list)
+
 # Main program
-findFiles()
+findFiles(sys.argv[-1])
 quit()
