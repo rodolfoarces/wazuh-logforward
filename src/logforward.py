@@ -14,17 +14,12 @@ from pathlib import Path
 
 # Variables
 file_list = list()
-# Log directory
-#log_dir = Path(sys.argv[1]).resolve()
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
-# Functions and additional processing
-def printHelp():
-    msg = "Usage:\n logforwarder [OPTIONS] DIR"
-    print(msg)
-    quit()
 
+
+# Functions and additional processing
 def findFiles(directory=sys.argv[-1]):
     files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
     files = files_in_dir.stdout.decode('utf-8').splitlines()
@@ -32,34 +27,36 @@ def findFiles(directory=sys.argv[-1]):
         file_list.append(item)
 
     # print(file_list)
+def processFile(file):
+    print("Processing file: %s" % file)
 
+def processDirectory(directory):
+    findFiles(directory)
+    for file in file_list:
+        processFile(file)
 # Read parameters using argparse
-
-# Initialize parser
+## Initialize parser
 parser = argparse.ArgumentParser()
-
-# Adding optional argument
-parser.add_argument("-d", "--directory", help = "Log directory", action="store")
+## Adding optional argument
+parser.add_argument("-d", "--directory", help = "Log directory (Required)", action="store")
 parser.add_argument("-o", "--output", help = "Log output to file")
-
-# Read arguments from command line
+## Read arguments from command line
 args = parser.parse_args()
-
-#Set the output log
-try:
-    if args.output:
-        print("Logging to: % s" % args.output)
-except AttributeError:
-    print("Logging to stout")
-
-#Set the output log
-try:
-    if args.directory:
-        print("Processing: % s" % args.directory)
-except AttributeError:
+## Set the log directory to process
+if len([False for arg in vars(args) if vars(args)[arg]]) == 0:
+        print("At least one parameter (log directory) is needed") 
+        parser.print_help()
+        exit(1)
+if args.directory and args.directory != None:
+    print("Processing directory: %s" % args.directory)
+else:
     print("Directory option is required, use -d | --directory")
-    quit()
+    exit(1)
+## Set the output log
+if args.output:
+    print("Logging to: % s" % args.output)
 
 # Main program
 #findFiles(sys.argv[-1])
-quit()
+processDirectory(args.directory)
+exit(0)
