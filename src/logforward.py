@@ -10,6 +10,7 @@
 import sys
 import subprocess
 import argparse
+import requests
 from pathlib import Path
 
 # Variables
@@ -18,13 +19,13 @@ file_list = list()
 script_dir = Path(__file__).resolve().parent
 
 # Functions and additional processing
+## File tasks
 def findFiles(directory=sys.argv[-1]):
     files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
     files = files_in_dir.stdout.decode('utf-8').splitlines()
     for item in files:
         file_list.append(item)
 
-    # print(file_list)
 def processFile(file):
     print("Processing file: %s" % file)
     if file.lower().endswith(('.zip', '.gz')):
@@ -43,13 +44,21 @@ def processDirectory(directory):
     findFiles(directory)
     for file in file_list:
         processFile(file)
-        
+## API tasks
+def apiAuthenticate(url,username,password): 
+    print("Starting authentication process")
+    # api-endpoint
+    #r = requests.get(url, auth=(username, password))
+    #print(str(r.content))
 
 # Read parameters using argparse
 ## Initialize parser
 parser = argparse.ArgumentParser()
 ## Adding optional argument
 parser.add_argument("-d", "--directory", help = "Log directory (Required)", action="store")
+parser.add_argument("-u", "--username", help = "Username (Required)", action="store", default="admin")
+parser.add_argument("-p", "--password", help = "Password", action="store", default="admin")
+parser.add_argument("-U", "--url", help = "Wazuh Manager Url (Required)", action="store", default="https://localhost:55000")
 parser.add_argument("-o", "--output", help = "Log output to file")
 ## Read arguments from command line
 args = parser.parse_args()
