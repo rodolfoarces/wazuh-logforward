@@ -24,6 +24,8 @@ token = None
 username = "admin"
 password = "admin"
 manager = "https://localhost:55000"
+local_cli = False
+auth_error = False
 file_list = list()
 #Script directory
 script_dir = Path(__file__).resolve().parent
@@ -42,29 +44,27 @@ def processFile(file):
         print("%s is a compressed file" % file)
     else:
         file_stream = open(file, 'r')
-        count = 0
         # Strips the newline character
         for line in file_stream:
             count += 1
             print("Line{}: {}".format(count, line.strip()))
-            if count >= 10:
-                quit()
 
-def processDirectory(directory):
-    findFiles(directory)
-    apiAuthenticate(manager,username,password)
-    for file in file_list:
-        processFile(file)
 ## API tasks
-def apiAuthenticate(auth_manager,auth_username, auth_password):
+def apiAuthenticate(auth_manager,auth_username, auth_password, tries=3):
     auth_endpoint = auth_manager + "/security/user/authenticate?raw=true"
     print("Starting authentication process")
     # api-endpoint
-    auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
-    token = auth_request.content.decode("utf-8")
-    if "Unauthorized" in token:
-        print("Authentication error")
-        exit(2)
+    count = 0
+    while count < tries and auth_error == False:
+        auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
+        token = auth_request.content.decode("utf-8")
+        if "Unauthorized" in token:
+            print("Authentication error, try: %d" % count)
+            count +=1
+            if count == tries:
+                print("Tried %d authentication, and failed, please validate login information" % tries)
+                auth_error == True
+                exit(2)
 
 # Read parameters using argparse
 ## Initialize parser
@@ -74,6 +74,7 @@ parser.add_argument("-d", "--directory", help = "Log directory (Required)", acti
 parser.add_argument("-u", "--username", help = "Username (Required)", action="store", default="admin")
 parser.add_argument("-p", "--password", help = "Password", action="store", default="admin")
 parser.add_argument("-m", "--manager", help = "Wazuh Manager Url (Required)", action="store", default="https://localhost:55000")
+parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs", action="store_true")
 parser.add_argument("-o", "--output", help = "Log output to file")
 ## Read arguments from command line
 args = parser.parse_args()
@@ -87,27 +88,40 @@ if args.directory and args.directory != None:
 else:
     print("Directory option is required, use -d | --directory")
     exit(1)
-if args.username != "admin":
-    print("Setting username")
-    username = str(args.username)
-else:
-    print("Username not set, using: %s" % username)
-if args.password != "admin":
-    print("Setting password")
-    password = str(args.password)
-else:
-    print("Password not set, using default value")
-if args.manager != "https://localhost:55000":
-    print("Setting url")
-    manager = str(args.manager)
-else:
-    print("URl not set, using: https://localhost:55000")
 
 ## Set the output log
 if args.output:
     print("Logging to: % s" % args.output)
 
 # Main program
-#findFiles(sys.argv[-1])
-processDirectory(args.directory)
+# Validate if local run or API call
+if args.local == True:
+    print("Starting local CLI testing")
+    findFiles(args.directory)
+else:
+    print("Starting remote testing")
+    # Authentication for remote connection
+    ## Setting Parameters
+    if args.username != "admin":
+        print("Setting username")
+        username = str(args.username)
+    else:
+        print("Username not set, using: %s" % username)
+    if args.password != "admin":
+        print("Setting password")
+        password = str(args.password)
+    else:
+        print("Password not set, using default value")
+    ## Setting Manager URL
+    if args.manager != "https://localhost:55000":
+        print("Setting url")
+        manager = str(args.manager)
+    else:
+        print("URl not set, using: https://localhost:55000")
+    
+    # File processing
+    findFiles(args.directory)
+    print("Found %d files" % len(file_list))
+
+
 exit(0)
