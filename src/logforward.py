@@ -45,6 +45,7 @@ def findFiles(directory=sys.argv[-1]):
             file_list.append(directory)
 
 def processFile(file, auth_manager=None, token=None):
+    test_token = None
     print("Processing file: %s" % file)
     if file.lower().endswith(('.zip', '.gz')):
         print("%s is a compressed file" % file)
@@ -55,38 +56,44 @@ def processFile(file, auth_manager=None, token=None):
         except IOError:
             print ("Error: File does not appear to exist.")
             exit(3)
-
         for line in file_stream:
-            #count += 1
-            # print("Line{}: {}".format(count, line.strip()))
+            # API processing
             if token != None and auth_manager != None:
                 msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
-                msg = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
-                url = auth_manager + "/logtest?wait_for_complete=true" 
-                log_request = requests.put(url, json=msg, headers=msg_headers, verify=False)
-                r = log_request.content.decode('utf-8')
-                print (r)
+                if test_token == None:
+                    msg_data = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+                else:
+                    msg_data = { "token": test_token, "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+                msg_url = auth_manager + "/logtest?wait_for_complete=true" 
+                log_request = requests.put(msg_url, json=msg_data, headers=msg_headers, verify=False)
+                r = json.loads(log_request.content.decode('utf-8'))
+                try:
+                    test_token = r["data"]["token"]
+                    print("Using test session token: %s" % test_token)
+                except KeyError:
+                    test_token == None
+                print (json.dumps(r))
+            # Local processing
+            else:
+               r = subprocess.run(['/var/ossec/bin/wazuh-logtest'], stdout=subprocess.PIPE, stdin=line.decode('utf-8')split())
+               result = r.stdout.decode('utf-8') 
         
 
 ## API tasks
-def apiAuthenticate(auth_manager,auth_username, auth_password, tries):
+def apiAuthenticate(auth_manager,auth_username, auth_password):
     auth_endpoint = auth_manager + "/security/user/authenticate"
     print("Starting authentication process")
-    auth_error = False
     # api-endpoint
-    count = 0
-    if auth_error == False:
-        auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
-        r = auth_request.content.decode("utf-8")
-        auth_response = json.loads(r)
-        try:
-            return auth_response["data"]["token"]
-        except KeyError:
-            # "title": "Unauthorized", "detail": "Invalid credentials"
-            if auth_response["title"] == "Unauthorized":
-                print("Authentication error")
-                auth_error = True
-                return None
+    auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
+    r = auth_request.content.decode("utf-8")
+    auth_response = json.loads(r)
+    try:
+        return auth_response["data"]["token"]
+    except KeyError:
+        # "title": "Unauthorized", "detail": "Invalid credentials"
+        if auth_response["title"] == "Unauthorized":
+            print("Authentication error")
+            return None
 
 # Read parameters using argparse
 ## Initialize parser
@@ -96,7 +103,6 @@ parser.add_argument("-d", "--directory", help = "Log directory (Required)", acti
 parser.add_argument("-u", "--username", help = "Username (Required)", action="store", default="admin")
 parser.add_argument("-p", "--password", help = "Password", action="store", default="admin")
 parser.add_argument("-m", "--manager", help = "Wazuh Manager Url (Required)", action="store", default="https://localhost:55000")
-parser.add_argument("-t", "--tries", help = "Number of connection tries", action="store", default=3)
 parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs", action="store_true")
 parser.add_argument("-o", "--output", help = "Log output to file")
 ## Read arguments from command line
@@ -121,6 +127,8 @@ if args.output:
 if args.local == True:
     print("Starting local CLI testing")
     findFiles(args.directory)
+    for file in file_list:
+        processFile(file)
 else:
     print("Starting remote testing")
     # Authentication for remote connection
@@ -147,17 +155,11 @@ else:
     print("Found %d files" % len(file_list))
 
     if token == None:
-        token = apiAuthenticate(args.manager,args.username, args.password, args.tries)
+        token = apiAuthenticate(args.manager,args.username, args.password)
         if token == None:
             exit(2)
         else:
             print("Token available")
             for file in file_list:
                 processFile(file, args.manager, token)
-        
-
-        #for file in file_list:
-        #    processFile(file)
-
-
 exit(0)
