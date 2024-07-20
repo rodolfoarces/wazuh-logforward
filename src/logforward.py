@@ -54,7 +54,7 @@ def processFile(file, auth_manager=None, token=None):
             file_stream = open(file, 'r')
             # Strips the newline character
         except IOError:
-            print ("Error: File does not appear to exist.")
+            print ("Error opening file")
             exit(3)
         for line in file_stream:
             # API processing
