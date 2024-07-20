@@ -33,10 +33,16 @@ script_dir = Path(__file__).resolve().parent
 # Functions and additional processing
 ## File tasks
 def findFiles(directory=sys.argv[-1]):
-    files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
-    files = files_in_dir.stdout.decode('utf-8').splitlines()
-    for item in files:
-        file_list.append(item)
+    if Path(directory).is_dir():
+        print("%s is a directory, searching for files" % directory)
+        files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
+        files = files_in_dir.stdout.decode('utf-8').splitlines()
+        for item in files:
+            file_list.append(item)
+    else:
+        if Path(directory).is_file():
+            print ("%s is a file" % directory)
+            file_list.append(directory)
 
 def processFile(file, auth_manager=None, token=None):
     print("Processing file: %s" % file)
@@ -46,18 +52,21 @@ def processFile(file, auth_manager=None, token=None):
         try: 
             file_stream = open(file, 'r')
             # Strips the newline character
-            for line in file_stream:
-                #count += 1
-                # print("Line{}: {}".format(count, line.strip()))
-                if token != None and auth_manager != None:
-                   msg = { "token": token, "log_format": "syslog", "location": str(file), "event": line.strip() }
-                   url = auth_manager + "/logtest" 
-                   log_request = requests.put(url, msg)
-                   r = log_request.content.decode('utf-8')
-                   print (r)
         except IOError:
             print ("Error: File does not appear to exist.")
             exit(3)
+
+        for line in file_stream:
+            #count += 1
+            # print("Line{}: {}".format(count, line.strip()))
+            if token != None and auth_manager != None:
+                msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
+                msg = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+                url = auth_manager + "/logtest?wait_for_complete=true" 
+                log_request = requests.put(url, json=msg, headers=msg_headers, verify=False)
+                r = log_request.content.decode('utf-8')
+                print (r)
+        
 
 ## API tasks
 def apiAuthenticate(auth_manager,auth_username, auth_password, tries):
@@ -131,7 +140,7 @@ else:
         print("Setting url")
         manager = str(args.manager)
     else:
-        print("URl not set, using: https://localhost:55000")
+        print("URL not set, using: https://localhost:55000")
     
     # File processing
     findFiles(args.directory)
