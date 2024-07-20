@@ -75,7 +75,7 @@ def processFile(file, auth_manager=None, token=None):
                 print (json.dumps(r))
             # Local processing
             else:
-               r = subprocess.run('/var/ossec/bin/wazuh-logtest', stdout=subprocess.PIPE, stdin=line.decode('utf-8').split())
+               r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=line.encode('utf-8'))
                result = r.stdout.decode('utf-8') 
         
 
