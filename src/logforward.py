@@ -35,6 +35,7 @@ script_dir = Path(__file__).resolve().parent
 def findFiles(directory=sys.argv[-1]):
     if Path(directory).is_dir():
         print("%s is a directory, searching for files" % directory)
+        # TO-DO using python rather than local tool to find files
         files_in_dir = subprocess.run(['find', directory , '-type', 'f'], stdout=subprocess.PIPE)
         files = files_in_dir.stdout.decode('utf-8').splitlines()
         for item in files:
@@ -75,8 +76,16 @@ def processFile(file, auth_manager=None, token=None):
                 print (json.dumps(r))
             # Local processing
             else:
+               #TO-DO validate if binary exists, might not be present
                r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=line.encode('utf-8'))
-               result = r.stdout.decode('utf-8') 
+               result = r.stdout.decode('utf-8')
+        # Delete testing session after finishing with file
+        if test_token != None:
+            session_header = msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
+            session_url = auth_manager + "logtest/sessions/" + test_token
+            session_request = requests.delete(session_url, headers=session_header)
+            if session_request.status_code != 200:
+                print("There was an error closing the session")
         
 
 ## API tasks
@@ -99,21 +108,28 @@ def apiAuthenticate(auth_manager,auth_username, auth_password):
 ## Initialize parser
 parser = argparse.ArgumentParser()
 ## Adding optional argument
-parser.add_argument("-d", "--directory", help = "Log directory (Required)", action="store")
-parser.add_argument("-u", "--username", help = "Username (Required)", action="store", default="admin")
-parser.add_argument("-p", "--password", help = "Password", action="store", default="admin")
-parser.add_argument("-m", "--manager", help = "Wazuh Manager Url (Required)", action="store", default="https://localhost:55000")
-parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs", action="store_true")
+parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs, it is run on a Wazuh Manager node, requires -d DIR", action="store_true")
+parser.add_argument("-r", "--remote", help = "Use remote API tools to test logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
+parser.add_argument("-f", "--forward", help = "Send events to API to process, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
+parser.add_argument("-d", "--directory", help = "Log directory|file (Required)", action="store")
+parser.add_argument("-u", "--username", help = "Username, required for remote API", action="store", default="wazuh")
+parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
+parser.add_argument("-m", "--manager", help = "Wazuh Manager Url, required for remote API", action="store", default="https://localhost:55000")
 parser.add_argument("-o", "--output", help = "Log output to file")
 ## Read arguments from command line
 args = parser.parse_args()
 ## Set the log directory to process
+## The minimal infomation is a directory to process with the local testing
 if len([False for arg in vars(args) if vars(args)[arg]]) == 0:
-        print("At least one parameter ( -d DIR | --directory DIR ) is needed") 
-        parser.print_help()
-        exit(1)
+    print("At least one parameter ( -d DIR | --directory DIR ) is needed") 
+    parser.print_help()
+    exit(1)
 if args.directory and args.directory != None:
     print("Processing directory: %s" % args.directory)
+    print("Starting local CLI testing")
+    findFiles(args.directory)
+    for file in file_list:
+        processFile(file)
 else:
     print("Directory option is required, use -d | --directory")
     exit(1)
@@ -125,20 +141,20 @@ if args.output:
 # Main program
 # Validate if local run or API call
 if args.local == True:
-    print("Starting local CLI testing")
+    print("Starting local CLI testing, ignoring -r, -f")
     findFiles(args.directory)
     for file in file_list:
         processFile(file)
-else:
-    print("Starting remote testing")
+elif args.remote == True:
+    print("Starting remote testing, ignoring -f")
     # Authentication for remote connection
     ## Setting Parameters
-    if args.username != "admin":
+    if args.username != "wazuh":
         print("Setting username")
         username = str(args.username)
     else:
         print("Username not set, using: %s" % username)
-    if args.password != "admin":
+    if args.password != "wazuh":
         print("Setting password")
         password = str(args.password)
     else:
@@ -162,4 +178,8 @@ else:
             print("Token available")
             for file in file_list:
                 processFile(file, args.manager, token)
+elif args.forward == True:
+    print("Forwarding logs to Wazuh Server using API")
+else:
+
 exit(0)
