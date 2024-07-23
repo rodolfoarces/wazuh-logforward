@@ -8,6 +8,7 @@
 # Exit errors:
 # 1 - Required parameter is missing
 # 2 - Authentication error (Token)
+# 3 - Error opening a file
 
 # Requirements
 import sys
@@ -22,8 +23,8 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 
 # Variables
 token = None
-username = "admin"
-password = "admin"
+username = "wazuh"
+password = "wazuh"
 manager = "https://localhost:55000"
 local_cli = False
 file_list = list()
@@ -108,9 +109,10 @@ def apiAuthenticate(auth_manager,auth_username, auth_password):
 ## Initialize parser
 parser = argparse.ArgumentParser()
 ## Adding optional argument
+parser.add_argument("-f", "--forward", help = "Use remote API send logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
+parser.add_argument("-t", "--test", help = "Test logs against decoders and rules, requires -l (local) or -r (remote)", action="store_true")
 parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs, it is run on a Wazuh Manager node, requires -d DIR", action="store_true")
 parser.add_argument("-r", "--remote", help = "Use remote API tools to test logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
-parser.add_argument("-f", "--forward", help = "Send events to API to process, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
 parser.add_argument("-d", "--directory", help = "Log directory|file (Required)", action="store")
 parser.add_argument("-u", "--username", help = "Username, required for remote API", action="store", default="wazuh")
 parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
@@ -124,7 +126,7 @@ if len([False for arg in vars(args) if vars(args)[arg]]) == 0:
     print("At least one parameter ( -d DIR | --directory DIR ) is needed") 
     parser.print_help()
     exit(1)
-if args.directory and args.directory != None:
+elif args.directory and args.directory != None :
     print("Processing directory: %s" % args.directory)
     print("Starting local CLI testing")
     findFiles(args.directory)
@@ -178,8 +180,8 @@ elif args.remote == True:
             print("Token available")
             for file in file_list:
                 processFile(file, args.manager, token)
-elif args.forward == True:
-    print("Forwarding logs to Wazuh Server using API")
 else:
+    print("Something else was wrong")
+    exit(3)
 
 exit(0)
