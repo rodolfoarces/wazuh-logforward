@@ -66,10 +66,38 @@ def processLineLocal(line):
     else:
         print("Wazuh logtest binary missing")
 
-def processFileRemote():
-    print("Processing remote")
+## API tasks
+def apiAuthenticate(auth_manager,auth_username, auth_password):
+    auth_endpoint = auth_manager + "/security/user/authenticate"
+    print("Starting authentication process")
+    # api-endpoint
+    auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
+    r = auth_request.content.decode("utf-8")
+    auth_response = json.loads(r)
+    try:
+        return auth_response["data"]["token"]
+    except KeyError:
+        # "title": "Unauthorized", "detail": "Invalid credentials"
+        if auth_response["title"] == "Unauthorized":
+            print("Authentication error")
+            return None
 
-def processLineRemote(file, line, session=None):
+def processFileRemote(file, token=None):
+    print("Processing %s with remote tools" % file)
+    if file.lower().endswith(('.zip', '.gz')):
+        print("%s is a compressed file" % file)
+    else:
+        try: 
+            file_stream = open(file, 'r')
+            # Strips the newline character
+        except IOError:
+            print ("Error opening file")
+            exit(3)
+    for line in file_stream:
+        processLineRemote(file, line, token, logtest_token)
+
+
+def processLineRemote(file, line, token=None, session=None):
     # API processing
     msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
     if session == None:
@@ -117,8 +145,30 @@ elif args.directory and args.directory != None :
             processFileLocal(file)
     elif args.remote == True:
         print("Starting remote testing")
-        for file in file_list:
-            processFileRemote(file)
+        # Authentication for remote connection
+        ## Setting Parameters
+        if args.username != "wazuh":
+            print("Setting username")
+            username = str(args.username)
+        else:
+            print("Username not set, using: %s" % username)
+        if args.password != "wazuh":
+            print("Setting password")
+            password = str(args.password)
+        else:
+            print("Password not set, using default value")
+        ## Setting Manager URL
+        if args.manager != "https://localhost:55000":
+            print("Setting url")
+            manager = str(args.manager)
+        else:
+            print("URL not set, using: https://localhost:55000")
+        # Set token
+        token = apiAuthenticate(manager, username, password)
+        if token != None:
+            # Processing
+            for file in file_list:
+                processFileRemote(file, token)
 else:
     print("Directory option is required, use -d | --directory")
     exit(1)
