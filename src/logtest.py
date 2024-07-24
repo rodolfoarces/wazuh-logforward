@@ -146,11 +146,12 @@ fh = logging.FileHandler('debug.log')
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
+ch.setLevel(logging.INFO)
 # create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-ch.setFormatter(formatter)
+fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch_formatter = logging.Formatter('%(message)s')
+fh.setFormatter(fh_formatter)
+ch.setFormatter(ch_formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 logger.addHandler(ch)
