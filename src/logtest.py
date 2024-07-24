@@ -93,7 +93,7 @@ def processFileRemote(file, token=None):
     for line in file_stream:
         # API processing
         msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
-        if log_request == None:
+        if logtest_token == None:
             msg_data = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
         else:
             msg_data = { "token": logtest_token, "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
@@ -109,6 +109,13 @@ def processFileRemote(file, token=None):
             logtest_token == None
             print (json.dumps(r))
     
+    # Delete testing session after finishing with file
+    if logtest_token != None:
+        session_header = msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
+        session_url = manager + "logtest/sessions/" + logtest_token
+        session_request = requests.delete(session_url, headers=session_header)
+        if session_request.status_code != 200:
+            print("There was an error closing the session")
 
 
 # Read parameters using argparse
