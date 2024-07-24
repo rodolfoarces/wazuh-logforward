@@ -57,8 +57,9 @@ def processFileLocal(file):
                 exit(4)
 
             if Path('/var/ossec/bin/wazuh-logtest').is_file():
-                r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=str(line).encode('utf-8'))
-                result = r.stdout.decode('utf-8')
+                r = subprocess.run('/var/ossec/bin/wazuh-logtest', capture_output=True, check=True, text=True, input=str(line))
+                logger.debug(r)
+                logger.info(r.stderr)
             else:
                 logger.error("Wazuh logtest binary missing")
 
