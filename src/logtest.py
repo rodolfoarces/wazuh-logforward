@@ -5,6 +5,7 @@ import subprocess
 import argparse
 import requests
 import json
+import logging
 from pathlib import Path
 # Disabling warning: /usr/lib/python3/dist-packages/urllib3/connectionpool.py:1100: InsecureRequestWarning: 
 # Unverified HTTPS request is being made to host '10.1.1.3'. Adding certificate verification is strongly advised.
@@ -15,7 +16,6 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 # 3 - Error opening file
 # 4 - Wazuh logtest binary missing
 
-
 # Variables
 token = None
 username = "wazuh"
@@ -23,14 +23,13 @@ password = "wazuh"
 manager = "https://localhost:55000"
 local_cli = False
 file_list = list()
-logtest_token = None
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
 # Functions
 def findFiles(path=script_dir):
     if Path(path).is_dir():
-        print("%s is a directory, searching for files" % path)
+        logger.debug("%s is a directory, searching for files" % path)
         for f in Path(path).iterdir():
             if f.is_file():
                 file_list.append(f)
@@ -40,33 +39,33 @@ def findFiles(path=script_dir):
         file_list.append(path)
 
 def processFileLocal(file):
-    print("Processing file: %s" % file)
+    logger.debug("Processing file: %s" % file)
     if str(file).lower().endswith(('.zip', '.gz')):
-        print("%s is a compressed file" % file)
+        logger.debug("%s is a compressed file" % file)
     else:
         try: 
             file_stream = open(file, 'r')
             # Strips the newline character
         except IOError:
-            print ("Error opening file")
+            logger.error("Error opening file")
             exit(3)
         for line in file_stream:
             try:
                 r = Path('/var/ossec/bin/wazuh-logtest').is_file()
             except:
-                print("Error accesing Wazuh logtest binary")
+                logger.error("Error accesing Wazuh logtest binary")
                 exit(4)
 
             if Path('/var/ossec/bin/wazuh-logtest').is_file():
                 r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=str(line).encode('utf-8'))
                 result = r.stdout.decode('utf-8')
             else:
-                print("Wazuh logtest binary missing")
+                logger.error("Wazuh logtest binary missing")
 
 ## API tasks
 def apiAuthenticate(auth_manager,auth_username, auth_password):
     auth_endpoint = auth_manager + "/security/user/authenticate"
-    print("Starting authentication process")
+    logger.debug("Starting authentication process")
     # api-endpoint
     auth_request = requests.get(auth_endpoint, auth=(auth_username, auth_password), verify=False)
     r = auth_request.content.decode("utf-8")
@@ -76,19 +75,23 @@ def apiAuthenticate(auth_manager,auth_username, auth_password):
     except KeyError:
         # "title": "Unauthorized", "detail": "Invalid credentials"
         if auth_response["title"] == "Unauthorized":
-            print("Authentication error")
+            logger.error("Authentication error")
             return None
 
 def processFileRemote(file, token=None):
-    print("Processing %s with remote tools" % file)
+    # Local variables
+    logtest_token = None
+    # validate if compressed file
+    # TO-DO add compressed file management
+    logger.debug("Processing %s with remote tools" % file)
     if file.lower().endswith(('.zip', '.gz')):
-        print("%s is a compressed file" % file)
+        logger.debug("%s is a compressed file" % file)
     else:
         try: 
             file_stream = open(file, 'r')
             # Strips the newline character
         except IOError:
-            print ("Error opening file")
+            logger.error("Error opening file")
             exit(3)
     for line in file_stream:
         # API processing
@@ -103,11 +106,11 @@ def processFileRemote(file, token=None):
         r = json.loads(log_request.content.decode('utf-8'))
         try:
             logtest_token = r["data"]["token"]
-            print("Using test session token: %s" % logtest_token)
-            print (json.dumps(r))
+            logger.debug("Using test session token: %s" % logtest_token)
+            logger.debug(json.dumps(r))
         except KeyError:
             logtest_token == None
-            print (json.dumps(r))
+            logger.debug(json.dumps(r))
     
     # Delete testing session after finishing with file
     if logtest_token != None:
@@ -115,7 +118,7 @@ def processFileRemote(file, token=None):
         session_url = manager + "logtest/sessions/" + logtest_token
         session_request = requests.delete(session_url, headers=session_header)
         if session_request.status_code != 200:
-            print("There was an error closing the session")
+            logger.debug("There was an error closing the session")
 
 
 # Read parameters using argparse
@@ -129,42 +132,62 @@ parser.add_argument("-u", "--username", help = "Username, required for remote AP
 parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
 parser.add_argument("-m", "--manager", help = "Wazuh Manager Url, required for remote API", action="store", default="https://localhost:55000")
 #parser.add_argument("-o", "--output", help = "Log output to file")
+
 ## Read arguments from command line
 args = parser.parse_args()
+## Set the logging element
+logger = logging.getLogger("testlog")
+logger.setLevel(logging.DEBUG)
+## Log to file
+# https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
+# create file handler which logs even debug messages
+fh = logging.FileHandler('debug.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
 ## Set the log directory to process
 ## The minimal infomation is a directory to process with the local testing        
 if len([False for arg in vars(args) if vars(args)[arg]]) == 0:
-    print("At least one parameter ( -d DIR | --directory DIR ) is needed") 
+    logger.error("At least one parameter ( -d DIR | --directory DIR ) is needed") 
     parser.print_help()
     exit(1)
 elif args.directory and args.directory != None :
-    print("Processing directory or file: %s" % args.directory)
+    logger.debug("Processing directory or file: %s" % args.directory)
     findFiles(args.directory)
     # Validating if local testing using CLI
     if args.local == True:
-        print("Starting local CLI testing")
+        logger.debug("Starting local CLI testing")
         for file in file_list:
             processFileLocal(file)
     elif args.remote == True:
-        print("Starting remote testing")
+        logger.debug("Starting remote testing")
         # Authentication for remote connection
         ## Setting Parameters
         if args.username != "wazuh":
-            print("Setting username")
+            logger.debug("Setting username")
             username = str(args.username)
         else:
-            print("Username not set, using: %s" % username)
+            logger.debug("Username not set, using: %s" % username)
         if args.password != "wazuh":
-            print("Setting password")
+            logger.debug("Setting password")
             password = str(args.password)
         else:
-            print("Password not set, using default value")
+            logger.debug("Password not set, using default value")
         ## Setting Manager URL
         if args.manager != "https://localhost:55000":
-            print("Setting url")
+            logger.debug("Setting url")
             manager = str(args.manager)
         else:
-            print("URL not set, using: https://localhost:55000")
+            logger.debug("URL not set, using: https://localhost:55000")
         # Set token
         token = apiAuthenticate(manager, username, password)
         if token != None:
@@ -172,7 +195,7 @@ elif args.directory and args.directory != None :
             for file in file_list:
                 processFileRemote(file, token)
 else:
-    print("Directory option is required, use -d | --directory")
+    logger.error("Directory option is required, use -d | --directory")
     exit(1)
 
 
