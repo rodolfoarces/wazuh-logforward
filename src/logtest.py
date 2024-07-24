@@ -108,7 +108,7 @@ def processFileRemote(file, token=None):
         try:
             logtest_token = r["data"]["token"]
             logger.debug("Using test session token: %s" % logtest_token)
-            logger.debug(json.dumps(r))
+            logger.info(json.dumps(r))
         except KeyError:
             logtest_token == None
             logger.debug(json.dumps(r))
@@ -132,7 +132,7 @@ parser.add_argument("-d", "--directory", help = "Log directory|file (Required)",
 parser.add_argument("-u", "--username", help = "Username, required for remote API", action="store", default="wazuh")
 parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
 parser.add_argument("-m", "--manager", help = "Wazuh Manager Url, required for remote API", action="store", default="https://localhost:55000")
-#parser.add_argument("-o", "--output", help = "Log output to file")
+parser.add_argument("-o", "--output", help = "Log output to file", action="store", default='out.log')
 
 ## Read arguments from command line
 args = parser.parse_args()
@@ -142,7 +142,7 @@ logger.setLevel(logging.DEBUG)
 ## Log to file
 # https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
 # create file handler which logs even debug messages
-fh = logging.FileHandler('debug.log')
+fh = logging.FileHandler(args.output)
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
