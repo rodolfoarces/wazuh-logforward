@@ -51,20 +51,17 @@ def processFileLocal(file):
             print ("Error opening file")
             exit(3)
         for line in file_stream:
-            processLineLocal(line.split())
+            try:
+                r = Path('/var/ossec/bin/wazuh-logtest').is_file()
+            except:
+                print("Error accesing Wazuh logtest binary")
+                exit(4)
 
-def processLineLocal(line):
-    try:
-        r = Path('/var/ossec/bin/wazuh-logtest').is_file()
-    except PermissionError:
-        print("Error accesing Wazuh logtest binary")
-        exit(4)
-
-    if Path('/var/ossec/bin/wazuh-logtest').is_file():
-        r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=line.encode('utf-8'))
-        result = r.stdout.decode('utf-8')
-    else:
-        print("Wazuh logtest binary missing")
+            if Path('/var/ossec/bin/wazuh-logtest').is_file():
+                r = subprocess.run('/var/ossec/bin/wazuh-logtest', shell=True, stdout=subprocess.PIPE, input=str(line).encode('utf-8'))
+                result = r.stdout.decode('utf-8')
+            else:
+                print("Wazuh logtest binary missing")
 
 ## API tasks
 def apiAuthenticate(auth_manager,auth_username, auth_password):
@@ -94,26 +91,24 @@ def processFileRemote(file, token=None):
             print ("Error opening file")
             exit(3)
     for line in file_stream:
-        processLineRemote(file, line, token, logtest_token)
-
-
-def processLineRemote(file, line, token=None, session=None):
-    # API processing
-    msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
-    if session == None:
-        msg_data = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
-    else:
-        msg_data = { "token": session, "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+        # API processing
+        msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
+        if log_request == None:
+            msg_data = { "token": "", "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+        else:
+            msg_data = { "token": logtest_token, "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
+        
+        msg_url = manager + "/logtest?wait_for_complete=true" 
+        log_request = requests.put(msg_url, json=msg_data, headers=msg_headers, verify=False)
+        r = json.loads(log_request.content.decode('utf-8'))
+        try:
+            logtest_token = r["data"]["token"]
+            print("Using test session token: %s" % logtest_token)
+            print (json.dumps(r))
+        except KeyError:
+            logtest_token == None
+            print (json.dumps(r))
     
-    msg_url = manager + "/logtest?wait_for_complete=true" 
-    log_request = requests.put(msg_url, json=msg_data, headers=msg_headers, verify=False)
-    r = json.loads(log_request.content.decode('utf-8'))
-    try:
-        logtest_token = r["data"]["token"]
-        print("Using test session token: %s" % logtest_token)
-    except KeyError:
-        logtest_token == None
-        print (json.dumps(r))
 
 
 # Read parameters using argparse
