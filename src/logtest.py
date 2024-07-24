@@ -132,29 +132,46 @@ parser.add_argument("-d", "--directory", help = "Log directory|file (Required)",
 parser.add_argument("-u", "--username", help = "Username, required for remote API", action="store", default="wazuh")
 parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
 parser.add_argument("-m", "--manager", help = "Wazuh Manager Url, required for remote API", action="store", default="https://localhost:55000")
-parser.add_argument("-o", "--output", help = "Log output to file", action="store", default='out.log')
+parser.add_argument("-o", "--output", help = "Log output to file", action="store")
+parser.add_argument("-D", "--debug", help = "Enable debug", action="store_true")
 
 ## Read arguments from command line
 args = parser.parse_args()
 ## Set the logging element
-logger = logging.getLogger("testlog")
-logger.setLevel(logging.DEBUG)
-## Log to file
+
+## Log to file or stdout
 # https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook
 # create file handler which logs even debug messages
-fh = logging.FileHandler(args.output)
-fh.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch_formatter = logging.Formatter('%(message)s')
-fh.setFormatter(fh_formatter)
-ch.setFormatter(ch_formatter)
-# add the handlers to the logger
-logger.addHandler(fh)
-logger.addHandler(ch)
+logger = logging.getLogger("testlog")
+if args.debug:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
+# If file is set, everything goes there
+if args.output:
+    # create console handler with a higher log level
+    fh = logging.FileHandler(args.output)
+    # Define log level
+    if args.debug == True:
+        fh.setLevel(logging.DEBUG)
+    else:
+        fh.setLevel(logging.INFO)
+    fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(fh_formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+else:
+    # create console handler with a higher log level
+    fh = logging.StreamHandler()
+    # Define log level
+    if args.debug == True:
+        fh.setLevel(logging.DEBUG)
+    else:
+        fh.setLevel(logging.INFO)
+    fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(fh_formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
 
 ## Set the log directory to process
 ## The minimal infomation is a directory to process with the local testing        
