@@ -154,9 +154,10 @@ if args.output:
     # Define log level
     if args.debug == True:
         fh.setLevel(logging.DEBUG)
+        fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     else:
         fh.setLevel(logging.INFO)
-    fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh_formatter = logging.Formatter('%(message)s')
     fh.setFormatter(fh_formatter)
     # add the handlers to the logger
     logger.addHandler(fh)
@@ -166,9 +167,10 @@ else:
     # Define log level
     if args.debug == True:
         fh.setLevel(logging.DEBUG)
+        fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     else:
         fh.setLevel(logging.INFO)
-    fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh_formatter = logging.Formatter('%(message)s')
     fh.setFormatter(fh_formatter)
     # add the handlers to the logger
     logger.addHandler(fh)
@@ -213,6 +215,7 @@ elif args.directory and args.directory != None :
             # Processing
             for file in file_list:
                 processFileRemote(file, token)
+    exit(0)
 else:
     logger.error("Directory option is required, use -d | --directory")
     exit(1)
