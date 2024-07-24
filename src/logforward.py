@@ -12,7 +12,6 @@
 
 # Requirements
 import sys
-import subprocess
 import argparse
 import requests
 import json
@@ -63,24 +62,40 @@ def processFileLocal(file):
 def processFileRemote(file, token=None):
     print("Processing file: %s" % file)
     if file.lower().endswith(('.zip', '.gz')):
-        print("%s is a compressed file" % file)
+        logger.debug("%s is a compressed file" % file)
     else:
-        try: 
+        try:
+            with open(file, "rb") as file_stream:
+                num_lines = sum(1 for _ in file_stream)
+                logger.debug("File has %s lines" % num_lines)
             file_stream = open(file, 'r')
             # Strips the newline character
         except IOError:
-            print ("Error opening file")
+            logger.error("Error opening file")
             exit(3)
-        for line in file_stream:
-            logger.debug("push line to file")
+        count = 0
+        logs=[]
+        while file_stream:
+            if num_lines - count > 100:
+                for l in range(count, (count + 100)):
+                    logs.append(file_stream[count])
+                    count += 1
+            else:
+                for l in range(count,num_lines):
+                    logs.append(file_stream[count])
+                    count += 1
             # API processing
             msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
-            msg_data = { "token": test_token, "log_format": "syslog", "location": str(file), "event": json.dumps(line.split()) }
-            msg_url = manager + "/logtest?wait_for_complete=true" 
-            forward_request = requests.put(msg_url, json=msg_data, headers=msg_headers, verify=False)
+            msg_data = { "events": logs }
+            logger.debug(json.dumps(msg_data))
+            msg_url = manager + "/events?wait_for_complete=true" 
+            forward_request = requests.post(msg_url, json=msg_data, headers=msg_headers, verify=False)
             r = json.loads(forward_request.content.decode('utf-8'))
+            # Check 
             if forward_request.status_code != 200:
-                    logger.error("There was an error closing the session")
+                    logger.error("There were errors sending the logs")
+            else:
+                logger.info(r)
         
 def apiAuthenticate(auth_manager,auth_username, auth_password):
     auth_endpoint = auth_manager + "/security/user/authenticate"
