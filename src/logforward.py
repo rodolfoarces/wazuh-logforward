@@ -16,6 +16,7 @@ import argparse
 import requests
 import json
 import logging
+import time
 from pathlib import Path
 # Disabling warning: /usr/lib/python3/dist-packages/urllib3/connectionpool.py:1100: InsecureRequestWarning: 
 # Unverified HTTPS request is being made to host '10.1.1.3'. Adding certificate verification is strongly advised.
@@ -28,6 +29,7 @@ password = "wazuh"
 manager = "https://localhost:55000"
 local_cli = False
 file_list = list()
+eps = 5
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
@@ -44,21 +46,39 @@ def findFiles(path=script_dir):
     elif Path(path).is_file():
         file_list.append(path)
 
-def processFileLocal(file):
-    test_token = None
-    print("Processing file: %s" % file)
-    if file.lower().endswith(('.zip', '.gz')):
-        print("%s is a compressed file" % file)
+def processFileLocal(process_file, forward_file , eps, size):
+    print("Processing file: %s" % process_file)
+    if str(process_file).lower().endswith(('.zip', '.gz')):
+        print("%s is a compressed file" % str(process_file))
     else:
         try: 
-            file_stream = open(file, 'r')
+            file_stream = open(process_file, 'r')
             # Strips the newline character
         except IOError:
             print ("Error opening file")
             exit(3)
+        count = 0
+        logs=[]
         for line in file_stream:
-            logger.debug("push line to file")
-        
+            # Size is in bytes, must be adapted to MB
+            if Path(forward_file).stat().st_size > (size * 1024 * 1024 * 1024):
+                logger.debug("%s file is larger than %d MB, reseting content", forward_file, size)
+                f = open(forward_file, 'r+')
+                f.truncate(0)
+
+            if count < eps:
+                logs.append(line)
+                count += 1
+            else:
+                f = open(forward_file, 'a')
+                for log_line in logs:
+                    f.write(str(log_line) + "\n")
+                time.sleep(1)
+                logs=[]
+                count = 0
+
+            
+            
 def processFileRemote(file, token=None):
     print("Processing file: %s" % file)
     if file.lower().endswith(('.zip', '.gz')):
@@ -117,7 +137,9 @@ def apiAuthenticate(auth_manager,auth_username, auth_password):
 parser = argparse.ArgumentParser()
 ## Adding optional argument
 parser.add_argument("-f", "--forward", help = "Use remote API send logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
-parser.add_argument("-l", "--local", help = "Use local CLI tools to test logs, it is run on a Wazuh Manager node, requires -d DIR", action="store_true")
+parser.add_argument("-l", "--local", help = "Use local file to store events", action="store")
+parser.add_argument("-e", "--eps", help = "Events per second to add on local files, default 5 EPS", type=int, default=5, action="store")
+parser.add_argument("-s", "--size", help = "Max size to allow on local file in (MB), default 512MB", type=int, default=512, action="store")
 parser.add_argument("-d", "--directory", help = "Log directory|file (Required)", action="store")
 parser.add_argument("-u", "--username", help = "Username, required for remote API", action="store", default="wazuh")
 parser.add_argument("-p", "--password", help = "Password, required for remote API", action="store", default="wazuh")
@@ -176,10 +198,10 @@ elif args.directory and args.directory != None :
     logger.debug("Processing directory or file: %s" % args.directory)
     findFiles(args.directory)
     # Validating if local testing using CLI
-    if args.local == True:
-        logger.debug("Starting local CLI testing")
+    if args.local:
+        logger.debug("Starting file forwarding via local file: %s" % args.local)
         for file in file_list:
-            processFileLocal(file)
+            processFileLocal(file, args.local, args.eps, args.size)
     elif args.remote == True:
         logger.debug("Starting remote testing")
         # Authentication for remote connection
