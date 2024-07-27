@@ -55,27 +55,29 @@ def processFileLocal(process_file, forward_file , eps, size):
             file_stream = open(process_file, 'r')
             # Strips the newline character
         except IOError:
-            print ("Error opening file")
+            print ("Error opening log file")
             exit(3)
-        count = 0
+
         logs=[]
+        try:
+            f = open(forward_file, 'a+')
+        except IOError:
+            print ("Error opening forwarding file")
+            exit(3)
         for line in file_stream:
             # Size is in bytes, must be adapted to MB
             if Path(forward_file).stat().st_size > (size * 1024 * 1024 * 1024):
                 logger.debug("%s file is larger than %d MB, reseting content", forward_file, size)
-                f = open(forward_file, 'r+')
                 f.truncate(0)
 
-            if count < eps:
-                logs.append(line)
-                count += 1
-            else:
-                f = open(forward_file, 'a')
+            logs.append(line)
+            # Test EPS count
+            if len(logs) == int(eps):
                 for log_line in logs:
-                    f.write(str(log_line) + "\n")
+                    f.write(log_line)
+                logger.debug("Writing %d lines to file" % len(logs))
                 time.sleep(1)
                 logs=[]
-                count = 0
 
             
             
