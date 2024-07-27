@@ -1,6 +1,33 @@
 # logforward.py
 Forward logs to Wazuh Manager
 
+For local file, it sends logs to a file that needs to be monitored by the Wazuh Agent
+
+For remote connection uses the Wazuh Server's Event API
+
+```
+usage: logforward.py [-h] [-f] [-l LOCAL] [-e EPS] [-s SIZE] [-d DIRECTORY] [-u USERNAME] [-p PASSWORD] [-m MANAGER] [-o OUTPUT] [-D]
+
+options:
+  -h, --help            show this help message and exit
+  -f, --forward         Use remote API send logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER
+  -l LOCAL, --local LOCAL
+                        Use local file to store events
+  -e EPS, --eps EPS     Events per second to add on local files, default 5 EPS
+  -s SIZE, --size SIZE  Max size to allow on local file in (MB), default 512MB
+  -d DIRECTORY, --directory DIRECTORY
+                        Log directory|file (Required)
+  -u USERNAME, --username USERNAME
+                        Username, required for remote API
+  -p PASSWORD, --password PASSWORD
+                        Password, required for remote API
+  -m MANAGER, --manager MANAGER
+                        Wazuh Manager Url, required for remote API
+  -o OUTPUT, --output OUTPUT
+                        Log output to file
+  -D, --debug           Enable debug
+```
+
 # logtest.py
 Test logs with decoders and rules
 
