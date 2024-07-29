@@ -122,6 +122,7 @@ def processFileRemote(file, remote_token=None, eps=50):
                     logger.error("There were errors sending the logs")
             else:
                 logger.info(r)
+            time.sleep(2)
         
 def apiAuthenticate(auth_manager,auth_username, auth_password):
     auth_endpoint = auth_manager + "/security/user/authenticate"
