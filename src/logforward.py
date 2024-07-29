@@ -81,7 +81,10 @@ def processFileLocal(process_file, forward_file , eps, size):
 
             
             
-def processFileRemote(file, token=None):
+def processFileRemote(file, remote_token=None, eps=50):
+    if eps > 50:
+        logger.debug("The Wazuh Manager Events API allows only up 50 events per second, overriding the option -e | --eps %d " % eps)
+        eps = 50
     print("Processing file: %s" % file)
     if file.lower().endswith(('.zip', '.gz')):
         logger.debug("%s is a compressed file" % file)
@@ -98,8 +101,9 @@ def processFileRemote(file, token=None):
         count = 0
         logs=[]
         while file_stream:
-            if num_lines - count > 100:
-                for l in range(count, (count + 100)):
+            # Events API has a 2 second delay between requests
+            if num_lines - count > (eps * 2):
+                for l in range(count, (count + (eps * 2)):
                     logs.append(file_stream[count])
                     count += 1
             else:
@@ -107,7 +111,7 @@ def processFileRemote(file, token=None):
                     logs.append(file_stream[count])
                     count += 1
             # API processing
-            msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + token}
+            msg_headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer " + remote_token}
             msg_data = { "events": logs }
             logger.debug(json.dumps(msg_data))
             msg_url = manager + "/events?wait_for_complete=true" 
@@ -228,8 +232,13 @@ elif args.directory and args.directory != None :
         token = apiAuthenticate(manager, username, password)
         if token != None:
             # Processing
-            for file in file_list:
-                processFileRemote(file, token)
+            if args.eps: 
+                for file in file_list:
+                    processFileRemote(file, token, eps)
+            else:
+                for file in file_list:
+                    processFileRemote(file, token)
+            
     exit(0)
 else:
     logger.error("Directory option is required, use -d | --directory")
