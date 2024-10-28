@@ -8,7 +8,8 @@
 # Exit errors:
 # 1 - Required parameter is missing
 # 2 - Authentication error (Token)
-# 3 - Error opening a file
+# 3 - Error opening a log file
+# 4 - Error opening socket address
 
 # Requirements
 import sys
@@ -18,6 +19,7 @@ import json
 import logging
 import time
 from pathlib import Path
+from socket import AF_UNIX, SOCK_DGRAM, socket
 # Disabling warning: /usr/lib/python3/dist-packages/urllib3/connectionpool.py:1100: InsecureRequestWarning: 
 # Unverified HTTPS request is being made to host '10.1.1.3'. Adding certificate verification is strongly advised.
 requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -30,6 +32,8 @@ manager = "https://localhost:55000"
 local_cli = False
 file_list = list()
 eps = 5
+# Queue address
+SOCKET_ADDR = f'/var/ossec/queue/sockets/queue'
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
@@ -47,7 +51,7 @@ def findFiles(path=script_dir):
         file_list.append(path)
 
 def processFileLocal(process_file, forward_file , eps, size):
-    print("Processing file: %s" % process_file)
+    logger.debug("Processing file: %s" % process_file)
     if str(process_file).lower().endswith(('.zip', '.gz')):
         print("%s is a compressed file" % str(process_file))
     else:
@@ -62,7 +66,7 @@ def processFileLocal(process_file, forward_file , eps, size):
         try:
             f = open(forward_file, 'a+')
         except IOError:
-            print ("Error opening forwarding file")
+            logger.error("Error opening forwarding file")
             exit(3)
         for line in file_stream:
             # Size is in bytes, must be adapted to MB
@@ -79,7 +83,29 @@ def processFileLocal(process_file, forward_file , eps, size):
                 time.sleep(1)
                 logs=[]
 
-            
+def processFileSocket(process_file):
+    logger.debug("Processing file: %s" % process_file)
+    if str(process_file).lower().endswith(('.zip', '.gz')):
+        logger.debug("%s is a compressed file" % str(process_file))
+    else:
+        try: 
+            file_stream = open(process_file, 'r')
+            # Strips the newline character
+        except IOError:
+            logger.error("Error opening log file")
+            exit(3)
+        location = 'agent-queue'
+
+        for line in file_stream:
+            string = '1:{0}->wazuh-logforward:{1}'.format(location, line)
+            try:
+                sock = socket(AF_UNIX, SOCK_DGRAM)
+                sock.connect(SOCKET_ADDR)
+                sock.send(string.encode())
+                sock.close()
+            except FileNotFoundError:
+                logger.debug('# Error: Unable to open socket connection at %s' % SOCKET_ADDR)
+                exit(4)        
             
 def processFileRemote(file, remote_token=None, eps=50):
     if eps > 50:
@@ -144,7 +170,8 @@ def apiAuthenticate(auth_manager,auth_username, auth_password):
 parser = argparse.ArgumentParser()
 ## Adding optional argument
 parser.add_argument("-f", "--forward", help = "Use remote API send logs, requires: -d DIR|FILE, -u USERNAME, -p PASSWORD, -m MANAGER", action="store_true")
-parser.add_argument("-l", "--local", help = "Use local file to store events", action="store")
+parser.add_argument("-l", "--local", help = "Use local file to store events, requires: -d DIR|FILE", action="store")
+parser.add_argument("-q", "--queue", help = "Use agent queue to forward events, requires : -d DIR|FILE", action="store_true")
 parser.add_argument("-e", "--eps", help = "Events per second to add on local files, default 5 EPS", type=int, default=5, action="store")
 parser.add_argument("-s", "--size", help = "Max size to allow on local file in (MB), default 512MB", type=int, default=512, action="store")
 parser.add_argument("-d", "--directory", help = "Log directory|file (Required)", action="store")
@@ -209,8 +236,8 @@ elif args.directory and args.directory != None :
         logger.debug("Starting file forwarding via local file: %s" % args.local)
         for file in file_list:
             processFileLocal(file, args.local, args.eps, args.size)
-    elif args.remote == True:
-        logger.debug("Starting remote testing")
+    elif args.forward == True:
+        logger.debug("Starting remote forwarding")
         # Authentication for remote connection
         ## Setting Parameters
         if args.username != "wazuh":
@@ -239,7 +266,15 @@ elif args.directory and args.directory != None :
             else:
                 for file in file_list:
                     processFileRemote(file, token)
-            
+    elif args.queue == True:
+        logger.debug("Starting file forwarding using agent queue")
+        for file in file_list:
+            processFileSocket(file)
+    # Default is to go for queue
+    else:
+        logger.debug("No method selected, starting file forwarding using agent queue")
+        for file in file_list:
+            processFileSocket(file)
     exit(0)
 else:
     logger.error("Directory option is required, use -d | --directory")
