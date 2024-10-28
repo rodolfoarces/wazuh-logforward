@@ -97,6 +97,7 @@ def processFileSocket(process_file):
         location = 'agent-queue'
 
         for line in file_stream:
+            logger.debug("Full log: %s", str(line))
             string = '1:{0}->wazuh-logforward:{1}'.format(location, line)
             try:
                 sock = socket(AF_UNIX, SOCK_DGRAM)
@@ -129,7 +130,7 @@ def processFileRemote(file, remote_token=None, eps=50):
         while file_stream:
             # Events API has a 2 second delay between requests
             if num_lines - count > (eps * 2):
-                for l in range(count, (count + (eps * 2)):
+                for l in range(count, (count + (eps * 2))):
                     logs.append(file_stream[count])
                     count += 1
             else:
