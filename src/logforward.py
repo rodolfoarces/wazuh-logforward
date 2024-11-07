@@ -10,9 +10,11 @@
 # 2 - Authentication error (Token)
 # 3 - Error opening a log file
 # 4 - Error opening socket address
+# 5 - OS indetification error
 
 # Requirements
 import sys
+import platform
 import argparse
 import requests
 import json
@@ -33,7 +35,16 @@ local_cli = False
 file_list = list()
 eps = 5
 # Queue address
-SOCKET_ADDR = f'/var/ossec/queue/sockets/queue'
+os = platform.system()
+if os == 'Linux':
+    logger.debug("Using " + os + "socket")
+    SOCKET_ADDR = f'/var/ossec/queue/sockets/queue'
+elif os == 'Darwin':
+    logger.debug("Using " + os + "socket")
+    SOCKET_ADDR = f'/var/ossec/queue/sockets/queue'
+else:
+    logger.error("Somethig went wrong finding the OS socket")
+    exit(5)
 #Script directory
 script_dir = Path(__file__).resolve().parent
 
